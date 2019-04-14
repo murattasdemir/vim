@@ -10,34 +10,26 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " }}}
 
-" ==== PLUGINS ==== {{{
-" plugin on GitHub repo
-Plugin 'tpope/vim-fugitive'
+" ==== Vundle PLUGINS ==== {{{
+"Plugin 'tpope/vim-fugitive'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'godlygeek/tabular'
+"Plugin 'scrooloose/nerdcommenter'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'nvie/vim-flake8'
-Plugin 'tmhedberg/simpylfold'
 Plugin 'vim-pandoc/vim-pandoc'
 Plugin 'vim-pandoc/vim-pandoc-syntax'
+Plugin 'fisadev/vim-isort'
 " }}}
-
-
 call vundle#end()            " required
 filetype plugin indent on    " required
 
-" I will leave this here for future use.
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+" ==== Vim-Plug PLUGINS ==== {{{
+call plug#begin()
+Plug 'python-mode/python-mode', { 'branch': 'develop' }
+call plug#end()
+" }}}
 
 "Incremental search
 set incsearch
@@ -62,13 +54,18 @@ set statusline+=\ of:		" separator
 set statusline+=%04L		" total lines
 " }}}
 
-set number relativenumber
 
 " ==== LEADER ==== {{{
 :let mapleader = "-"
 " }}}
 
 " ==== Mappings ==== {{{
+" James Powell's remaps
+vnoremap <silent> <leader>[ :w ! python3<CR>
+vnoremap <silent> <leader>[[ :w ! python3<CR>
+vnoremap <silent> <leader>] :Tyank<CR>
+vnoremap <silent> <leader>]] :Twrite bottom<CR>
+" Donzo.
 cnoremap w!! w !sudo tee %
 nnoremap <C-o> O<Esc>					" Add blank line.
 nnoremap <Space> dd					" Space bar to delete line in normal mode.
@@ -86,6 +83,8 @@ nnoremap <leader>" viw<esc>a"<esc>bi"<esc>lel
 nnoremap <leader>' viw<esc>a'<esc>bi'<esc>lel
 nnoremap <leader>[ viw<esc>a[ <esc>bi ]<esc>lel
 nnoremap <leader># ^i#<esc>
+
+nnoremap <leader>up :!scp vadam.py opc@130.61.49.122:/home/opc/vadam.py<cr>
 
 " set paste/nopaste
 nnoremap <leader>sp :set paste<cr>i
@@ -113,10 +112,6 @@ inoremap jkq <esc>:q<enter>
 inoremap jkd <esc>2ld$
 inoremap <esc> <nop>
 " }}}
-
-" ==== Abbreviations ==== {{{
-iabbrev nsig Nazareno V. Feito Matias <nazareno.feito.matias@oracle.com>
-iabbrev nvfm Nazareno V. Feito Matias http://www.minimalistictraveler.com
 
 " ==== Autocmd ==== 
 autocmd FileType c :iabbrev <buffer> iff if ()<left>
@@ -155,7 +150,7 @@ command! MakeTags !ctags -R .
 " }}}
 
 " Vimscript colors and themes section --- {{{
-colorscheme desert
+colorscheme rainyday
 " To disable colors
 "syntax off
 set hlsearch
@@ -177,14 +172,26 @@ augroup filetype_vim
 augroup END
 " }}}
 
+set number relativenumber
 
 " Pathogen - plugin manager
 execute pathogen#infect()
 
 " Nerdtree plugin
-autocmd vimenter * NERDTree
+"autocmd vimenter * NERDTree
 map <C-n> :NERDTreeToggle<CR>
 
 " Neocomplete
 let g:neocomplete#enable_at_startup = 1
 let g:SimpylFold_docstring_preview = 1
+
+" ==== Markdown + LaTeX {{{
+" This gets rid of the nasty _ italic bug in tpope's vim-markdown
+" block $$...$$
+syn region math start=/\$\$/ end=/\$\$/
+" inline math
+syn match math '\$[^$].\{-}\$'
+
+" actually highlight the region we defined as "math"
+hi link math Statement
+" }}}
